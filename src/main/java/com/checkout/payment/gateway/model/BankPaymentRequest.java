@@ -7,7 +7,6 @@ import lombok.ToString;
 
 @Getter
 @Builder
-@ToString
 public class BankPaymentRequest {
 
   @JsonProperty("card_number")
