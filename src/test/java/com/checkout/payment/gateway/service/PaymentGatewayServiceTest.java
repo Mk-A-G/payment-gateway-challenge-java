@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import com.checkout.payment.gateway.downstream.BankClient;
+import com.checkout.payment.gateway.enums.PaymentStatus;
+import com.checkout.payment.gateway.model.BankPaymentResponse;
 import com.checkout.payment.gateway.model.PostPaymentRequest;
 import com.checkout.payment.gateway.model.PostPaymentResponse;
 import com.checkout.payment.gateway.repository.PaymentsRepository;
@@ -15,7 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 @ExtendWith(MockitoExtension.class)
 class PaymentGatewayServiceTest {
@@ -28,12 +31,13 @@ class PaymentGatewayServiceTest {
 
   private PostPaymentRequest request;
 
+  private BankPaymentResponse bankPaymentResponse;
+
   @Mock
-  private RestTemplate restTemplate;
+  private BankClient bankClient;
 
   @BeforeEach
   void setUp() {
-    paymentGatewayService = new PaymentGatewayService(paymentsRepository);
 
     request = new PostPaymentRequest();
     request.setAmount(10);
@@ -43,6 +47,9 @@ class PaymentGatewayServiceTest {
     request.setCardNumber("4321432143214321");
     request.setCvv("123");
 
+    bankPaymentResponse = new BankPaymentResponse();
+    bankPaymentResponse.setAuthorized(true);
+    bankPaymentResponse.setAuthorizationCode(UUID.randomUUID().toString());
 
   }
 
@@ -81,39 +88,46 @@ class PaymentGatewayServiceTest {
   @Test
   void processPaymentCallsBankDownStream() {
 
-    Mockito.when(restTemplate.postForObject(Mockito.anyString(), Mockito.any(), String.class))
-        .thenReturn("ftghyjrfj");
-
     paymentGatewayService.processPayment(request);
+
+    Mockito.verify(bankClient).processPayment(Mockito.any());
 
   }
 
   @Test
-  void processPaymentBankDownStreamCallIsSuccess() {
+  void processPaymentBankDownStreamCallReturnBankPaymentResponse() {
 
-    Mockito.when(restTemplate.postForObject(Mockito.anyString(), Mockito.any(), String.class))
-        .thenReturn("ftghyjrfj");
+    Mockito.when(bankClient.processPayment(Mockito.any())).thenReturn(bankPaymentResponse);
 
 
-    paymentGatewayService.processPayment(request);
+
+    PostPaymentResponse response = paymentGatewayService.processPayment(request);
+
+    Mockito.verify(bankClient).processPayment(Mockito.any());
+
+    assertEquals(response.getStatus().getName(),PaymentStatus.AUTHORIZED.getName());
+
 
   }
 
   @Test
   void processPaymentBankDownStreamCallIsNotAuthorised() {
 
+    bankPaymentResponse.setAuthorized(false);
 
-    Mockito.when(restTemplate.postForObject(Mockito.anyString(), Mockito.any(), String.class))
-        .thenReturn("ftghyjrfj");
+    Mockito.when(bankClient.processPayment(Mockito.any())).thenReturn(bankPaymentResponse);
 
-    paymentGatewayService.processPayment(request);
+    PostPaymentResponse response = paymentGatewayService.processPayment(request);
+
+    Mockito.verify(bankClient).processPayment(Mockito.any());
+
+    assertEquals(response.getStatus().getName(), PaymentStatus.DECLINED.getName());
   }
 
   @Test
   void processPaymentBankDownStreamIsDown() {
 
-    Mockito.when(restTemplate.postForObject(Mockito.anyString(), Mockito.any(), String.class))
-        .thenReturn(null);
+    Mockito.when(bankClient.processPayment(Mockito.any())).thenReturn(bankPaymentResponse);
 
     paymentGatewayService.processPayment(request);
 
@@ -122,8 +136,7 @@ class PaymentGatewayServiceTest {
   @Test
   void processPaymentSavesPaymentInRepository() {
 
-    Mockito.when(restTemplate.postForObject(Mockito.anyString(), Mockito.any(), String.class))
-        .thenReturn("ftghyjrfj");
+    Mockito.when(bankClient.processPayment(Mockito.any())).thenReturn(bankPaymentResponse);
 
     Mockito.verify(paymentsRepository).add(Mockito.any());
 

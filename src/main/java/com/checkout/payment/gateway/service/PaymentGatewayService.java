@@ -1,7 +1,9 @@
 package com.checkout.payment.gateway.service;
 
+import com.checkout.payment.gateway.downstream.BankClient;
 import com.checkout.payment.gateway.enums.PaymentStatus;
 import com.checkout.payment.gateway.exception.EventProcessingException;
+import com.checkout.payment.gateway.model.BankPaymentRequest;
 import com.checkout.payment.gateway.model.PostPaymentRequest;
 import com.checkout.payment.gateway.model.PostPaymentResponse;
 import com.checkout.payment.gateway.repository.PaymentsRepository;
@@ -17,8 +19,13 @@ public class PaymentGatewayService {
 
   private final PaymentsRepository paymentsRepository;
 
-  public PaymentGatewayService(PaymentsRepository paymentsRepository) {
+  private final BankClient bankClient;
+
+
+
+  public PaymentGatewayService(PaymentsRepository paymentsRepository, BankClient bankClient) {
     this.paymentsRepository = paymentsRepository;
+    this.bankClient = bankClient;
   }
 
   public PostPaymentResponse getPaymentById(UUID id) {
@@ -27,6 +34,15 @@ public class PaymentGatewayService {
   }
 
   public PostPaymentResponse processPayment(PostPaymentRequest paymentRequest) {
+
+
+    bankClient.processPayment(BankPaymentRequest.builder()
+        .cardNumber(paymentRequest.getCardNumber())
+        .expiryDate(paymentRequest.getExpiryDate())
+        .currency(paymentRequest.getCurrency())
+        .amount(paymentRequest.getAmount())
+        .cvv(paymentRequest.getCvv())
+        .build());
 
     return  PostPaymentResponse.builder()
         .id(UUID.randomUUID())
