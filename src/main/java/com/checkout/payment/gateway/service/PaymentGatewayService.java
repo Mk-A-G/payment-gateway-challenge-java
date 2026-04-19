@@ -34,12 +34,12 @@ public class PaymentGatewayService {
         .expiryYear(paymentRequest.getExpiryYear())
         .expiryMonth(paymentRequest.getExpiryMonth())
         .currency(paymentRequest.getCurrency())
-        .cardNumberLastFour(paymentRequest.getCardNumber())
+        .cardNumberLastFour(extractLastFourDigitsFromPan(paymentRequest.getCardNumber()))
         .status(PaymentStatus.AUTHORIZED)
         .build();
-
-
-
-
   }
+  private String extractLastFourDigitsFromPan(String cardNumberLastFour) {
+    return cardNumberLastFour.substring(cardNumberLastFour.length() - 4);
+  }
+
 }

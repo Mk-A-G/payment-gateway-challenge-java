@@ -34,7 +34,14 @@ class PaymentGatewayServiceTest {
   @BeforeEach
   void setUp() {
     paymentGatewayService = new PaymentGatewayService(paymentsRepository);
+
     request = new PostPaymentRequest();
+    request.setAmount(10);
+    request.setCurrency("USD");
+    request.setExpiryMonth(12);
+    request.setExpiryYear(2026);
+    request.setCardNumber("4321432143214321");
+    request.setCvv("123");
 
 
   }
