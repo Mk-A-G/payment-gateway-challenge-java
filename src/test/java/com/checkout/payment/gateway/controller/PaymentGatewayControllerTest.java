@@ -40,7 +40,7 @@ class PaymentGatewayControllerTest {
     paymentRequest.setCurrency("USD");
     paymentRequest.setExpiryMonth(12);
     paymentRequest.setExpiryYear(2026);
-    paymentRequest.setCardNumberLastFour("4321");
+    paymentRequest.setCardNumber("4321432143214321");
     paymentRequest.setCvv("123");
 
   }

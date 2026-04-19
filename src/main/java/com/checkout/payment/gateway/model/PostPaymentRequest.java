@@ -14,10 +14,10 @@ import lombok.Setter;
 @Setter
 public class PostPaymentRequest implements Serializable {
 
-  @NotNull(message = "There is a need for the PAN last 4")
-  @Pattern(regexp = "\\d{4}", message = "Must be a 4 digit number")
-  @JsonProperty("card_number_last_four")
-  private String cardNumberLastFour;
+  @NotNull(message = "There is a need for a card number")
+  @Pattern(regexp = "\\d{14,19}", message = "Must be between 14 and 19 digits")
+  @JsonProperty("card_number")
+  private String cardNumber;
 
   @Min(1)
   @Max(12)
