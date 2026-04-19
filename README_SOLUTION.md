@@ -17,24 +17,35 @@ Upon first inspection, the first thing I analysed was the code structure and qua
 - Logging is minimal
 - The storage is a map
 - The only tests is the controller therefore the is no testing of the Unit of code
-- The response type for the "Proccess Payment" method is incorrect. Only a random UUID is passed not the full object as outlined in the requirements
-
+- The response type for the "Proccess Payment" method is incorrect. Only a random UUID is passed not
+  the full object as outlined in the requirements.
 
 ## Assumptions
 
-1) No need to implement header sanitization as because no values from the header are used or passed to downstream
+1) No need to implement header sanitization as because no values from the header are used or passed
+   to downstream
 2) Not implementing any performance enhancing capabilities as the task specifically mentions to not
    overengineer the app
 3) No authentication or authorisation required for the purposes of this app
 
-
 ## Design Considerations
 
 1) Controller -> Service -> Repo
-2) Error Handling: 
-   - An implementation for a response for service unavailable as the current expected responses don't
-      effectively cover that scenario
-   - Error messaging appropriate for the outcome
-   - Field validation and handling
+2) Error Handling:
+
+- An implementation for a response for service unavailable as the current expected responses don't
+  effectively cover that scenario
+- Error messaging appropriate for the outcome
+- Field validation and handling
+
 3) Do not plan on using any sort of DB so store the ID. A map should suffice for now.
 4) Logging for better observability
+5) If the Design was kept the way it is, the mapping for a card to an Id would be done in the
+   controller. to keep consistency. The service will return the object rather than the controller
+   doing the mapping 
+6) CVV and Last 4 changed to String to allow for trailing 0
+7) Used builder pattern for the response for readability 
+8) An implementation for the client call. This will allow for the service to act as an orchestrator rather than handling also the client calling and other functions
+9) Model classes for the bank's request and response. to allow for ease of maintainability of contracts.
+10) Create a custom exception class to handle the donw stream service errors
+11) included a postman collection for manual testing

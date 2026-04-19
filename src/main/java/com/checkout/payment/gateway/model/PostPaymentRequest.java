@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Pattern;
 import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
@@ -45,13 +46,6 @@ public class PostPaymentRequest implements Serializable {
   @JsonProperty("expiry_date")
   public String getExpiryDate() {
     return String.format("%d/%d", expiryMonth, expiryYear);
-  }
-
-  @Override
-  public String toString() {
-    return "PostPaymentRequest{" + "cardNumberLastFour=" + cardNumber + ", expiryMonth="
-        + expiryMonth + ", expiryYear=" + expiryYear + ", currency='" + currency + '\''
-        + ", amount=" + amount + ", cvv=" + cvv + '}';
   }
 }
 

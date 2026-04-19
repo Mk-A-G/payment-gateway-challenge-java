@@ -61,9 +61,9 @@ public class PaymentGatewayService {
     LOG.info("Requesting payment Auth to payment with pan last 4 {}",
         extractLastFourDigitsFromPan(paymentRequest.getCardNumber()));
     BankPaymentResponse response = callBankForAuth(paymentRequest);
-    LOG.info("Payment Auth Response: {}", response);
+    LOG.info("Bank Auth Response: {}", response);
     PostPaymentResponse postPaymentResponse = constructPostPaymentResponse(paymentRequest, response);
-
+    LOG.info("Payment Response: {}", postPaymentResponse);
     paymentsRepository.add(postPaymentResponse);
 
     return postPaymentResponse;
