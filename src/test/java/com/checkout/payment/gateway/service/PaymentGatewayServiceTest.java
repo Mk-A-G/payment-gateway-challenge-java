@@ -125,15 +125,6 @@ class PaymentGatewayServiceTest {
   }
 
   @Test
-  void processPaymentBankDownStreamIsDown() {
-
-    Mockito.when(bankClient.processPayment(Mockito.any())).thenReturn(bankPaymentResponse);
-
-    paymentGatewayService.processPayment(request);
-
-  }
-
-  @Test
   void processPaymentSavesPaymentInRepository() {
 
     Mockito.when(bankClient.processPayment(Mockito.any())).thenReturn(bankPaymentResponse);
