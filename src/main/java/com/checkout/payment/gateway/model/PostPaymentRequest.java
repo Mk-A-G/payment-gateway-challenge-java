@@ -49,7 +49,7 @@ public class PostPaymentRequest implements Serializable {
 
   @Override
   public String toString() {
-    return "PostPaymentRequest{" + "cardNumberLastFour=" + cardNumberLastFour + ", expiryMonth="
+    return "PostPaymentRequest{" + "cardNumberLastFour=" + cardNumber + ", expiryMonth="
         + expiryMonth + ", expiryYear=" + expiryYear + ", currency='" + currency + '\''
         + ", amount=" + amount + ", cvv=" + cvv + '}';
   }
