@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.checkout.payment.gateway.exception.BankingSystemUnavailableException;
-import com.checkout.payment.gateway.exception.EventProcessingException;
 import com.checkout.payment.gateway.model.BankPaymentRequest;
 import com.checkout.payment.gateway.model.BankPaymentResponse;
 import org.junit.jupiter.api.Test;
@@ -32,7 +31,7 @@ class BankClientTest {
   void processPaymentThrowsExceptionWhenBankIsDown() {
     Mockito
         .when(restTemplate.postForObject(Mockito.anyString(), Mockito.any(BankPaymentRequest.class),
-                Mockito.eq(BankPaymentResponse.class)))
+            Mockito.eq(BankPaymentResponse.class)))
         .thenThrow(new ResourceAccessException("Testing here for Bank completely down"));
 
     Exception exception = assertThrows(BankingSystemUnavailableException.class, () -> {
