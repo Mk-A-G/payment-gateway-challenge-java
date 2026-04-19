@@ -3,6 +3,7 @@ package com.checkout.payment.gateway.downstream;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.checkout.payment.gateway.exception.BankingSystemUnavailableException;
 import com.checkout.payment.gateway.exception.EventProcessingException;
 import com.checkout.payment.gateway.model.BankPaymentRequest;
 import com.checkout.payment.gateway.model.BankPaymentResponse;
@@ -34,7 +35,7 @@ class BankClientTest {
                 Mockito.eq(BankPaymentResponse.class)))
         .thenThrow(new ResourceAccessException("Testing here for Bank completely down"));
 
-    Exception exception = assertThrows(EventProcessingException.class, () -> {
+    Exception exception = assertThrows(BankingSystemUnavailableException.class, () -> {
       bankClient.processPayment(BankPaymentRequest.builder().build());
     });
 
@@ -53,7 +54,7 @@ class BankClientTest {
             Mockito.eq(BankPaymentResponse.class)))
         .thenThrow(new HttpServerErrorException(HttpStatusCode.valueOf(503)));
 
-    Exception exception = assertThrows(EventProcessingException.class, () -> {
+    Exception exception = assertThrows(BankingSystemUnavailableException.class, () -> {
       bankClient.processPayment(BankPaymentRequest.builder().build());
     });
 
