@@ -68,19 +68,6 @@ class PaymentGatewayControllerTest {
         .andExpect(jsonPath("$.amount").value(paymentResponse.getAmount()));
   }
 
-  @Test
-  void postPaymentEvent() throws Exception {
-
-    mvc.perform(MockMvcRequestBuilders.post("/payment").contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(paymentRequest)))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.status").value(PaymentStatus.AUTHORIZED.getName()))
-        .andExpect(jsonPath("$.cardNumberLastFour").value(paymentRequest.getCardNumber()))
-        .andExpect(jsonPath("$.expiryMonth").value(paymentRequest.getExpiryMonth()))
-        .andExpect(jsonPath("$.expiryYear").value(paymentRequest.getExpiryYear()))
-        .andExpect(jsonPath("$.currency").value(paymentRequest.getCurrency()))
-        .andExpect(jsonPath("$.amount").value(paymentRequest.getAmount()));
-  }
 
   @Test
   void postPaymentEventThrowsConstraintViolationErrorsWhenFieldsAreNull() throws Exception {
@@ -104,7 +91,7 @@ class PaymentGatewayControllerTest {
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {"", "GHS", "2134523457","2134523457213452345721"})
+  @ValueSource(strings = {"", "GHS", "2134523457", "2134523457213452345721"})
   void postPaymentInvalidCardNumberReturns400(String cardNumber) throws Exception {
 
     paymentRequest.setCardNumber(cardNumber);

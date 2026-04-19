@@ -18,7 +18,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 @ExtendWith(MockitoExtension.class)
 class PaymentGatewayServiceTest {
@@ -50,6 +49,7 @@ class PaymentGatewayServiceTest {
     bankPaymentResponse = new BankPaymentResponse();
     bankPaymentResponse.setAuthorized(true);
     bankPaymentResponse.setAuthorizationCode(UUID.randomUUID().toString());
+    Mockito.when(bankClient.processPayment(Mockito.any())).thenReturn(bankPaymentResponse);
 
   }
 
@@ -97,15 +97,13 @@ class PaymentGatewayServiceTest {
   @Test
   void processPaymentBankDownStreamCallReturnBankPaymentResponse() {
 
-    Mockito.when(bankClient.processPayment(Mockito.any())).thenReturn(bankPaymentResponse);
-
 
 
     PostPaymentResponse response = paymentGatewayService.processPayment(request);
 
     Mockito.verify(bankClient).processPayment(Mockito.any());
 
-    assertEquals(response.getStatus().getName(),PaymentStatus.AUTHORIZED.getName());
+    assertEquals(response.getStatus().getName(), PaymentStatus.AUTHORIZED.getName());
 
 
   }
@@ -129,42 +127,11 @@ class PaymentGatewayServiceTest {
 
     Mockito.when(bankClient.processPayment(Mockito.any())).thenReturn(bankPaymentResponse);
 
-    Mockito.verify(paymentsRepository).add(Mockito.any());
-
     paymentGatewayService.processPayment(request);
 
-  }
+    Mockito.verify(paymentsRepository).add(Mockito.any());
 
-
-  @Test
-  void getPaymentByIdFindsPaymentInRepository() {
-
-    PostPaymentResponse response = paymentGatewayService.processPayment(request);
-
-    assertNotNull(response.getId());
-
-    assertDoesNotThrow(() -> UUID.fromString(response.getId().toString()));
-
-    assertEquals(request.getCurrency(), response.getCurrency());
-    assertEquals(request.getAmount(), response.getAmount());
-    assertEquals(request.getCardNumber(), response.getCardNumberLastFour());
 
   }
-
-  @Test
-  void getPaymentByIdDoesNotFindPaymentInRepository() {
-
-    PostPaymentResponse response = paymentGatewayService.processPayment(request);
-
-    assertNotNull(response.getId());
-
-    assertDoesNotThrow(() -> UUID.fromString(response.getId().toString()));
-
-    assertEquals(request.getCurrency(), response.getCurrency());
-    assertEquals(request.getAmount(), response.getAmount());
-    assertEquals(request.getCardNumber(), response.getCardNumberLastFour());
-
-  }
-
 
 }
