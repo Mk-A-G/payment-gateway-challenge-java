@@ -71,18 +71,11 @@ class PaymentGatewayControllerTest {
   @Test
   void postPaymentEvent() throws Exception {
 
-    paymentRequest.setAmount(10);
-    paymentRequest.setCurrency("USD");
-    paymentRequest.setExpiryMonth(12);
-    paymentRequest.setExpiryYear(2026);
-    paymentRequest.setCardNumberLastFour("4321");
-    paymentRequest.setCvv("123");
-
     mvc.perform(MockMvcRequestBuilders.post("/payment").contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(paymentRequest)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.status").value(PaymentStatus.AUTHORIZED.getName()))
-        .andExpect(jsonPath("$.cardNumberLastFour").value(paymentRequest.getCardNumberLastFour()))
+        .andExpect(jsonPath("$.cardNumberLastFour").value(paymentRequest.getCardNumber()))
         .andExpect(jsonPath("$.expiryMonth").value(paymentRequest.getExpiryMonth()))
         .andExpect(jsonPath("$.expiryYear").value(paymentRequest.getExpiryYear()))
         .andExpect(jsonPath("$.currency").value(paymentRequest.getCurrency()))
@@ -111,10 +104,10 @@ class PaymentGatewayControllerTest {
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {"", "GHS", "2134523457"})
-  void postPaymentInvalidCardNumberReturns400(String lastFour) throws Exception {
+  @ValueSource(strings = {"", "GHS", "2134523457","2134523457213452345721"})
+  void postPaymentInvalidCardNumberReturns400(String cardNumber) throws Exception {
 
-    paymentRequest.setCardNumberLastFour(lastFour);
+    paymentRequest.setCardNumber(cardNumber);
 
     mvc.perform(MockMvcRequestBuilders.post("/payment").contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(paymentRequest)))
