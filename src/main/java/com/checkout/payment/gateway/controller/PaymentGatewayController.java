@@ -34,14 +34,6 @@ public class PaymentGatewayController {
 
 
 
-    return new ResponseEntity<>(PostPaymentResponse.builder()
-        .id(paymentGatewayService.processPayment(paymentRequest))
-        .amount(paymentRequest.getAmount())
-        .expiryYear(paymentRequest.getExpiryYear())
-        .expiryMonth(paymentRequest.getExpiryMonth())
-        .currency(paymentRequest.getCurrency())
-        .cardNumberLastFour(paymentRequest.getCardNumberLastFour())
-        .status(PaymentStatus.AUTHORIZED)
-        .build(), HttpStatus.OK);
+    return new ResponseEntity<>(paymentGatewayService.processPayment(paymentRequest), HttpStatus.OK);
   }
 }
